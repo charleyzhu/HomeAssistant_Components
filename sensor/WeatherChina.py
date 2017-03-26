@@ -1,4 +1,6 @@
-
+'''
+WeatherChina　Developer by Charley
+'''
 import logging
 import voluptuous as vol
 

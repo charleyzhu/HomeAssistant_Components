@@ -9,9 +9,9 @@ This is an Home Assistant components
 - sensor from WeatherChina
 
 
-if you like what you're seeing! give me a smoke,tks.
+if you like what you're seeing! give me a smoke,tks. :）
 
-![Donation]https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/Donation.png)
+![Donation](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/Donation.png)
 
 
 ## Installation
@@ -62,8 +62,7 @@ speed,pitch,volume,peer is optional
 - volume default=5 value1 0-9
 - peer default=0 value1 0-1
 
-
-How get ApiKey and SecretKey? Please register Baidu developer
+How get ApiKey and SecretKey? Please register [Baidu developer](http://yuyin.baidu.com)
 
 # 中文
 
@@ -74,6 +73,11 @@ How get ApiKey and SecretKey? Please register Baidu developer
 
 - 百度TTS
 - 中国天气网传感器
+
+## 如果你感觉这个组件对你有所帮助请赐我根烟 :）
+
+![Donation](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/Donation.png)
+
 
 ## 安装方法
 在配置文件目录创建custom_components
@@ -120,5 +124,4 @@ speed,pitch,volume,peer 字段为可选值，即可以不写入
 - volume 默认=5 取值范围 0-9
 - peer 默认=0 取值范围 0-1
 
-
-How get ApiKey and SecretKey? Please register Baidu developer
+怎么获取ApiKey和SecretKey? 请注册[百度开发者](http://yuyin.baidu.com)
