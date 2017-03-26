@@ -1,5 +1,5 @@
 """
-Baidu TTS v0.1　Developer by Charley
+Baidu TTS　Developer by Charley
 """
 import voluptuous as vol
 from homeassistant.components.tts import Provider, PLATFORM_SCHEMA, CONF_LANG
@@ -24,7 +24,7 @@ CONF_SECRETKEY = 'secret_key'
 CONF_SPEED =  'speed'
 CONF_PITCH = 'pitch'
 CONF_VOLUME = 'volume'
-CONF_PERSON = 'person'
+PERSON = 'person'
 
 
 TOKEN_INTERFACE = 'https://openapi.baidu.com/oauth/2.0/token'
@@ -37,7 +37,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_SPEED,default='5'): cv.string,
     vol.Optional(CONF_PITCH,default='5'): cv.string,
     vol.Optional(CONF_VOLUME,default='5'): cv.string,
-    vol.Optional(CONF_PERSON,default='0'): cv.string,
+    vol.Optional(PERSON,default='0'): cv.string,
 })
 
 def get_engine(hass, config):
@@ -47,7 +47,7 @@ def get_engine(hass, config):
     speed = config.get(CONF_SPEED)
     pitch = config.get(CONF_PITCH)
     volume = config.get(CONF_VOLUME)
-    person = config.get(CONF_PERSON)
+    person = config.get(PERSON)
 
     if apiKey == None:
         _Log.error('Api Key is nil')
@@ -104,7 +104,7 @@ class BaiduTTS (Provider):
             _Log.error('get_tts_audio Self.ToKen is nil')
             return
 
-            resp = requests.get(TEXT2AUDIO_INTERFACE,params={'tex':message,'lan':language,'tok':self._Token,'ctp':'1','cuid':'HomeAssistant','spd':self._speed,'pit':self._pitch,'vol':self._volume,'per':self._person})
+        resp = requests.get(TEXT2AUDIO_INTERFACE,params={'tex':message,'lan':language,'tok':self._Token,'ctp':'1','cuid':'HomeAssistant','spd':self._speed,'pit':self._pitch,'vol':self._volume,'per':self._person})
 
         if resp.status_code == 500:
             _Log.error('Text2Audio Error:500 Not Support.')
