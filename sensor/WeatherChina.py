@@ -51,7 +51,7 @@ class WeatherChina(Entity):
 
         city = self.getWeatherData("city")
         weather = self.getWeatherData("weather")
-        return city +" "+ weather + ' Temperature'
+        return city + ' Temperature'
 
     @property
     def state(self):
