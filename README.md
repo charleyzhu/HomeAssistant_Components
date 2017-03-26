@@ -42,7 +42,7 @@ How get zhe citycode ,pls open [WeatherChina](http://www.weather.com.cn)
 ![WeatherChina](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/WeatherChina.png)
 
 
-Baitu TTS
+Baidu TTS
 Add the following line to the Configuration.yaml.
 ```
 tts:
@@ -105,7 +105,7 @@ sensor:
 ![WeatherChina](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/WeatherChina.png)
 
 
-Baitu TTS
+Baidu TTS
 在Configuration.yaml文件中添加一下字段
 ```
 tts:
