@@ -1,5 +1,5 @@
 """
-Baidu TTS　Developer by Charley
+Baidu TTS v0.1　Developer by Charley
 """
 import voluptuous as vol
 from homeassistant.components.tts import Provider, PLATFORM_SCHEMA, CONF_LANG
@@ -24,7 +24,7 @@ CONF_SECRETKEY = 'secret_key'
 CONF_SPEED =  'speed'
 CONF_PITCH = 'pitch'
 CONF_VOLUME = 'volume'
-CONF_PEER = 'peer'
+CONF_PERSON = 'person'
 
 
 TOKEN_INTERFACE = 'https://openapi.baidu.com/oauth/2.0/token'
@@ -37,7 +37,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_SPEED,default='5'): cv.string,
     vol.Optional(CONF_PITCH,default='5'): cv.string,
     vol.Optional(CONF_VOLUME,default='5'): cv.string,
-    vol.Optional(CONF_PEER,default='0'): cv.string,
+    vol.Optional(CONF_PERSON,default='0'): cv.string,
 })
 
 def get_engine(hass, config):
@@ -47,7 +47,7 @@ def get_engine(hass, config):
     speed = config.get(CONF_SPEED)
     pitch = config.get(CONF_PITCH)
     volume = config.get(CONF_VOLUME)
-    peer = config.get(CONF_PEER)
+    person = config.get(CONF_PERSON)
 
     if apiKey == None:
         _Log.error('Api Key is nil')
@@ -56,18 +56,18 @@ def get_engine(hass, config):
         _Log.error('secretKey is nil')
         return False
 
-    return BaiduTTS(lang,apiKey,secretKey,speed,pitch,volume,peer)
+    return BaiduTTS(lang,apiKey,secretKey,speed,pitch,volume,person)
 
 class BaiduTTS (Provider):
 
-    def __init__(self,lang,apiKey,secretKey,speed,pitch,volume,peer):
+    def __init__(self,lang,apiKey,secretKey,speed,pitch,volume,person):
         self._lang = lang
         self._apiKey = apiKey
         self._secretKey = secretKey
         self._speed = speed
         self._pitch = pitch
         self._volume = volume
-        self._peer = peer
+        self._person = person
         token = self.getToken()
         _Log.info("token =====>" + token)
         self._Token = token
@@ -104,7 +104,7 @@ class BaiduTTS (Provider):
             _Log.error('get_tts_audio Self.ToKen is nil')
             return
 
-        resp = requests.get(TEXT2AUDIO_INTERFACE,params={'tex':message,'lan':language,'tok':self._Token,'ctp':'1','cuid':'HomeAssistant','spd':self._speed,'pit':self._pitch,'vol':self._volume,'per':self._peer})
+            resp = requests.get(TEXT2AUDIO_INTERFACE,params={'tex':message,'lan':language,'tok':self._Token,'ctp':'1','cuid':'HomeAssistant','spd':self._speed,'pit':self._pitch,'vol':self._volume,'per':self._person})
 
         if resp.status_code == 500:
             _Log.error('Text2Audio Error:500 Not Support.')

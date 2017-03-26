@@ -53,14 +53,16 @@ tts:
     speed: 5
     pitch: 5
     volume: 5
-    peer: 1
+    person: 1
 ```
 
-speed,pitch,volume,peer is optional 
+speed,pitch,volume,person is optional 
 - speed default=5 value1 0-9
 - pitch default=5 value1 0-9
 - volume default=5 value1 0-9
-- peer default=0 value1 0-1
+- person default=0 value1 0-1
+person = 0  = Woman
+person = 1  = Man
 
 How get ApiKey and SecretKey? Please register [Baidu developer](http://yuyin.baidu.com)
 
@@ -116,12 +118,14 @@ tts:
     speed: 5
     pitch: 5
     volume: 5
-    peer: 1
+    person: 1
 ```
-speed,pitch,volume,peer 字段为可选值，即可以不写入
+speed,pitch,volume,person 字段为可选值，即可以不写入
 - speed 默认=5 取值范围 0-9
 - pitch 默认=5 取值范围 0-9
 - volume 默认=5 取值范围 0-9
-- peer 默认=0 取值范围 0-1
+- person 默认=0 取值范围 0-1
+person = 0  = 男声
+person = 1  = 女声
 
 怎么获取ApiKey和SecretKey? 请注册[百度开发者](http://yuyin.baidu.com)
