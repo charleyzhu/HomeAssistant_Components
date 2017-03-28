@@ -26,76 +26,70 @@ CONF_NOW = 'now'
 CONF_SUGGESTION = 'suggestion'
 
 AQI_TYPES = {
-    'aqi': ['aqi', None],
-    "co": ['co', None],
-    "no2": ['no2', None],
-    "o3": ['o3', None],
-    "pm10": ['pm10', None],
-    "pm25": ['pm25', None],
-    "qlty": ['qlty', None],
-    "so2": ['so2', None],
+    'aqi': ['AQI', None],
+    "co": ['AQI_CO', None],
+    "no2": ['AQI_NO2', None],
+    "o3": ['AQI_O3', None],
+    "pm10": ['AQI_PM10', None],
+    "pm25": ['AQI_PM25', None],
+    "qlty": ['AQI_QLTY', None],
+    "so2": ['AQI_SO2', None],
 }
 
 DAY_FORECAST_TYPES =  {
-    'sr': ['sr', None],
-    'ss': ['ss', None],
-    'mr': ['mr', None],
-    'ms': ['ms', None],
-    'Weather_d': ['Weather_d', None],
-    'Weather_n': ['Weather_n', None],
-    'hum': ['hum', None],
-    'pop': ['pop', None],
-    'pres': ['pres', None],
-    'maxTmp': ['maxTmp', None],
-    'minTmp': ['minTmp', None],
-    'uv': ['uv', None],
-    'vis': ['vis', None],
-    'deg': ['deg', None],
-    'dir': ['dir', None],
-    'sc': ['sc', None],
-    'spd': ['spd', None],
+    'sr': ['Day_SR', None],
+    'ss': ['Day_SS', None],
+    'mr': ['Day_MR', None],
+    'ms': ['Day_MS', None],
+    'Weather_d': ['Day_Weather_Day', None],
+    'Weather_n': ['Day_Weather_Night', None],
+    'hum': ['Day_HUM', None],
+    'pop': ['Day_POP', None],
+    'pres': ['Day_PRES', None],
+    'maxTmp': ['Day_MaxTmp', None],
+    'minTmp': ['Day_MinTmp', None],
+    'uv': ['Day_UV', None],
+    'vis': ['Day_VIS', None],
+    'deg': ['Day_DEG', None],
+    'dir': ['Day_DIR', None],
+    'sc': ['Day_SC', None],
+    'spd': ['Day_SPD', None],
 }
 
 HOUR_FORECAST_TYPE = {
-    'Weather': ['Weather', None],
-    'hum': ['hum', None],
-    'pop': ['pop', None],
-    'pres': ['pres', None],
-    'Tmp': ['Tmp', None],
-    'deg': ['deg', None],
-    'dir': ['dir', None],
-    'sc': ['sc', None],
-    'spd': ['spd', None],
+    'Weather': ['Hour_Weather', None],
+    'hum': ['Hour_HUM', None],
+    'pop': ['Hour_POP', None],
+    'pres': ['Hour_PRES', None],
+    'Tmp': ['Hour_Tmp', None],
+    'deg': ['Hour_DEG', None],
+    'dir': ['Hour_DIR', None],
+    'sc': ['Hour_SC', None],
+    'spd': ['Hour_SPD', None],
 }
 
 NOW_FORECAST_TYPE = {
-    'Weather': ['Weather', None],
-    'fl': ['fl', None],
-    'hum': ['hum', None],
-    'pcpn': ['pcpn', None],
-    'pres': ['pres', None],
-    'Tmp': ['Tmp', None],
-    'vis': ['vis', None],
-    'deg': ['deg', None],
-    'dir': ['dir', None],
-    'sc': ['sc', None],
-    'spd': ['spd', None],
+    'Weather': ['Now_Weather', None],
+    'fl': ['Now_Fl', None],
+    'hum': ['Now_HUM', None],
+    'pcpn': ['Now_PCPN', None],
+    'pres': ['Now_PRES', None],
+    'Tmp': ['Now_Tmp', None],
+    'vis': ['Now_VIS', None],
+    'deg': ['Now_DEG', None],
+    'dir': ['Now_DIR', None],
+    'sc': ['Now_SC', None],
+    'spd': ['Now_SPD', None],
 }
 
 SUGGESTION_FORECAST_TYPE = {
-    'Weather': ['Weather', None],
-    'fl': ['fl', None],
-    'hum': ['hum', None],
-    'pcpn': ['pcpn', None],
-    'pres': ['pres', None],
-    'Tmp': ['Tmp', None],
-    'vis': ['vis', None],
-    'deg': ['deg', None],
-    'dir': ['dir', None],
-    'sc': ['sc', None],
-    'spd': ['spd', None],
+    'brf': ['Suggestion_BRF', None],
+    'txt': ['Suggestion_TXT', None],
 }
-
+MODULE_SUGGESTION = vol.Schema({
+    vol.Required(cv.string, default=[]):
+        vol.All(cv.ensure_list, [vol.In(SUGGESTION_FORECAST_TYPE)]),
+})
 
 MODULE_SCHEMA = vol.Schema({
     vol.Required(CONF_AQI,default=[]):vol.All(cv.ensure_list, [vol.In(AQI_TYPES)]),
@@ -111,11 +105,11 @@ MODULE_SCHEMA = vol.Schema({
     vol.Required(CONF_18HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
     vol.Required(CONF_21HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
     vol.Required(CONF_NOW,default=[]):vol.All(cv.ensure_list, [vol.In(NOW_FORECAST_TYPE)]),
+    vol.Required(CONF_SUGGESTION,default=[]): MODULE_SUGGESTION,
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_MONITORED_CONDITIONS): MODULE_SCHEMA,
-
     vol.Optional(CONF_LATITUDE): cv.latitude,
     vol.Optional(CONF_LONGITUDE): cv.longitude,
     vol.Optional(CONF_ELEVATION): vol.Coerce(int),
