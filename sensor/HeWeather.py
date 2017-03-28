@@ -12,7 +12,9 @@ import requests
 
 
 SENSOR_TYPES = {
-    'symbol': ['Symbol', None],
+    'aqi':['aqi',None],
+    daily_forecast
+    # 'symbol': ['Symbol', None],
     # 'precipitation': ['Precipitation', 'mm'],
     # 'temperature': ['Temperature', '°C'],
     # 'windSpeed': ['Wind speed', 'm/s'],
