@@ -3,7 +3,7 @@ sensor:
   - platform: HeWeather
     monitored_conditions:
       # 空气质量指数
-      - aqi:
+      aqi:
         # 空气质量指数
         - aqi
         # 一氧化碳
@@ -21,7 +21,7 @@ sensor:
         # 二氧化硫
         - so2
       # 当天预报
-      - ToDay_forecast:
+      ToDay_forecast:
         # 日出时间
         - sr
         # 日落时间
@@ -57,12 +57,12 @@ sensor:
         # 风速
         - spd
       # 明天预报
-      - Tomorrow_forecast
+      Tomorrow_forecast:
       # 后天预报
-      - OfterTomorrow_forecast
+      OfterTomorrow_forecast:
 
       # 1小时预报
-      - 1Hour_forecast:
+      1Hour_forecast:
         # 天气情况
         - Weather
         # 相对湿度
@@ -83,22 +83,22 @@ sensor:
         - spd
 
       # 3小时预报
-      - 3Hour_forecast
+      3Hour_forecast:
       # 6小时预报
-      - 6Hour_forecast
+      6Hour_forecast:
       # 9小时预报
-      - 9Hour_forecast
+      9Hour_forecast:
       # 12小时预报
-      - 12Hour_forecast
+      12Hour_forecast:
       # 15小时预报
-      - 15Hour_forecast
+      15Hour_forecast:
       # 18小时预报
-      - 18Hour_forecast
+      18Hour_forecast:
       # 21小时预报
-      - 21Hour_forecast
+      21Hour_forecast:
 
       # 即时预报
-      - now
+      now:
         # 天气情况
         - Weather
         # 体感温度
@@ -123,12 +123,10 @@ sensor:
         - spd
 
       # 生活指数
-      - suggestion:
+      suggestion:
         # 舒适度指数
         - air:
-          # 简介
           - brf
-          # 数据详情
           - txt
         # 洗车指数
         - comf
@@ -142,7 +140,6 @@ sensor:
         - sport
         # 旅游指数
         - trav
-        紫外线指数
+        # 紫外线指数
         - uv
-
 ```
