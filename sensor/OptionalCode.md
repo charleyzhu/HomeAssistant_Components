@@ -61,7 +61,7 @@ sensor:
       # 后天预报
       OfterTomorrow_forecast:
 
-      # 1小时预报
+     # 1小时预报
       1Hour_forecast:
         # 天气情况
         - Weather
@@ -97,7 +97,7 @@ sensor:
       # 21小时预报
       21Hour_forecast:
 
-      # 即时预报
+     # 即时预报
       now:
         # 天气情况
         - Weather
@@ -121,25 +121,4 @@ sensor:
         - sc
         # 风速
         - spd
-
-      # 生活指数
-      suggestion:
-        # 舒适度指数
-        - air:
-          - brf
-          - txt
-        # 洗车指数
-        - comf
-        # 穿衣指数
-        - cw
-        # 穿衣指数
-        - drsg
-        # 感冒指数
-        - flu
-        # 运动指数
-        - sport
-        # 旅游指数
-        - trav
-        # 紫外线指数
-        - uv
 ```
