@@ -10,45 +10,22 @@ from homeassistant.const import (
     ATTR_ATTRIBUTION)
 import requests
 
-# AQI_TYPE = {
-#     'aqi':['aqi',None],
-#     "co" :['co',None],
-#     "no2" :['no2',None],
-#     "o3" :['o3',None],
-#     "pm10" :['pm10',None],
-#     "pm25" :['pm25',None],
-#     "qlty" :['qlty',None],
-#     "so2" :['so2',None],
-# }
+CONF_AQI = 'aqi'
+CONF_TODAY_FORECAST = 'ToDay_forecast'
+CONF_TOMORROW_FORECAST = 'Tomorrow_forecast'
+CONF_OFTERTOMORROW_FORECAST = 'OfterTomorrow_forecast'
+CONF_1HOUR_FORECAST = '1Hour_forecast'
+CONF_3HOUR_FORECAST = '3Hour_forecast'
+CONF_6HOUR_FORECAST = '6Hour_forecast'
+CONF_9HOUR_FORECAST = '9Hour_forecast'
+CONF_12HOUR_FORECAST = '12Hour_forecast'
+CONF_15HOUR_FORECAST = '15Hour_forecast'
+CONF_18HOUR_FORECAST = '18Hour_forecast'
+CONF_21HOUR_FORECAST = '21Hour_forecast'
+CONF_NOW = 'now'
+CONF_SUGGESTION = 'suggestion'
 
-# CONF_MODULES = 'modules'
-
-# SENSOR_TYPES = {
-#     'temperature': ['Temperature', TEMP_CELSIUS, 'mdi:thermometer'],
-#     'co2': ['CO2', 'ppm', 'mdi:cloud'],
-#     'pressure': ['Pressure', 'mbar', 'mdi:gauge'],
-#     'noise': ['Noise', 'dB', 'mdi:volume-high'],
-#     'humidity': ['Humidity', '%', 'mdi:water-percent'],
-#     'rain': ['Rain', 'mm', 'mdi:weather-rainy'],
-#     'sum_rain_1': ['sum_rain_1', 'mm', 'mdi:weather-rainy'],
-#     'sum_rain_24': ['sum_rain_24', 'mm', 'mdi:weather-rainy'],
-#     'battery_vp': ['Battery', '', 'mdi:battery'],
-#     'battery_lvl': ['Battery_lvl', '', 'mdi:battery'],
-#     'min_temp': ['Min Temp.', TEMP_CELSIUS, 'mdi:thermometer'],
-#     'max_temp': ['Max Temp.', TEMP_CELSIUS, 'mdi:thermometer'],
-#     'WindAngle': ['Angle', '', 'mdi:compass'],
-#     'WindAngle_value': ['Angle Value', 'º', 'mdi:compass'],
-#     'WindStrength': ['Strength', 'km/h', 'mdi:weather-windy'],
-#     'GustAngle': ['Gust Angle', '', 'mdi:compass'],
-#     'GustAngle_value': ['Gust Angle Value', 'º', 'mdi:compass'],
-#     'GustStrength': ['Gust Strength', 'km/h', 'mdi:weather-windy'],
-#     'rf_status': ['Radio', '', 'mdi:signal'],
-#     'rf_status_lvl': ['Radio_lvl', '', 'mdi:signal'],
-#     'wifi_status': ['Wifi', '', 'mdi:wifi'],
-#     'wifi_status_lvl': ['Wifi_lvl', 'dBm', 'mdi:wifi']
-# }
-
-SENSOR_TYPES = {
+AQI_TYPES = {
     'aqi': ['aqi', None],
     "co": ['co', None],
     "no2": ['no2', None],
@@ -57,25 +34,82 @@ SENSOR_TYPES = {
     "pm25": ['pm25', None],
     "qlty": ['qlty', None],
     "so2": ['so2', None],
-    # 'aqi':('aqi','co'),
-    # 'ToDay_forecast':['Weather','Weather_d',None],
-    # 'Tomorrow_forecast':['Weather','Weather_d',None],
-    # 'OfterTomorrow_forecast':['Weather','Weather_d',None],
-    # '1Hour_forecast':["1Hour Forecast","Weather",None],
-    # '3Hour_forecast':["3Hour_Forecast","Weather",None],
-    # '9Hour_forecast':["9Hour_Forecast","Weather",None],
-    # '12Hour_forecast':["12Hour_Forecast","Weather",None],
-    # '15Hour_forecast':["15Hour_Forecast","Weather",None],
-    # '18Hour_forecast':["19Hour_Forecast","Weather",None],
-    # '21Hour_forecast':["21Hour_Forecast","Weather",None],
-    # 'now':["Now_Forecast","Weather",None],
-    # 'suggestion':['Suggestion','comf',None],
-
 }
 
+DAY_FORECAST_TYPES =  {
+    'sr': ['sr', None],
+    'ss': ['ss', None],
+    'mr': ['mr', None],
+    'ms': ['ms', None],
+    'Weather_d': ['Weather_d', None],
+    'Weather_n': ['Weather_n', None],
+    'hum': ['hum', None],
+    'pop': ['pop', None],
+    'pres': ['pres', None],
+    'maxTmp': ['maxTmp', None],
+    'minTmp': ['minTmp', None],
+    'vis': ['vis', None],
+    'deg': ['deg', None],
+    'dir': ['dir', None],
+    'sc': ['sc', None],
+    'spd': ['spd', None],
+}
+
+HOUR_FORECAST_TYPE = {
+    'Weather': ['Weather', None],
+    'hum': ['hum', None],
+    'pop': ['pop', None],
+    'pres': ['pres', None],
+    'Tmp': ['Tmp', None],
+    'deg': ['deg', None],
+    'dir': ['dir', None],
+    'sc': ['sc', None],
+    'spd': ['spd', None],
+}
+
+NOW_FORECAST_TYPE = {
+    'Weather': ['Weather', None],
+    'fl': ['fl', None],
+    'hum': ['hum', None],
+    'pcpn': ['pcpn', None],
+    'pres': ['pres', None],
+    'Tmp': ['Tmp', None],
+    'vis': ['vis', None],
+    'deg': ['deg', None],
+    'dir': ['dir', None],
+    'sc': ['sc', None],
+    'spd': ['spd', None],
+}
+
+SUGGESTION_FORECAST_TYPE = {
+    'Weather': ['Weather', None],
+    'fl': ['fl', None],
+    'hum': ['hum', None],
+    'pcpn': ['pcpn', None],
+    'pres': ['pres', None],
+    'Tmp': ['Tmp', None],
+    'vis': ['vis', None],
+    'deg': ['deg', None],
+    'dir': ['dir', None],
+    'sc': ['sc', None],
+    'spd': ['spd', None],
+}
+
+
 MODULE_SCHEMA = vol.Schema({
-    vol.Required(cv.string, default=[]):
-        vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
+    vol.Required(CONF_AQI,default=[]):vol.All(cv.ensure_list, [vol.In(AQI_TYPES)]),
+    vol.Required(CONF_TODAY_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_TOMORROW_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_OFTERTOMORROW_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_1HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_3HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_6HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_9HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_12HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_15HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_18HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_21HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_NOW,default=[]):vol.All(cv.ensure_list, [vol.In(NOW_FORECAST_TYPE)]),
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
