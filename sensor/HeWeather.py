@@ -289,6 +289,8 @@ class HeWeatherSensor(Entity):
         self._sensor_Type = sensor_Type
         self._name = sensor_Name
 
+        self._state = None
+
     @property
     def name(self):
         """Return the name of the sensor."""
@@ -320,6 +322,7 @@ class HeWeatherSensor(Entity):
             return self._name
         if self._sensor_Type == CONF_SUGGESTION:
             return self._name
+
     @property
     def state(self):
         """Return the state of the sensor."""
