@@ -48,6 +48,7 @@ DAY_FORECAST_TYPES =  {
     'pres': ['pres', None],
     'maxTmp': ['maxTmp', None],
     'minTmp': ['minTmp', None],
+    'uv': ['uv', None],
     'vis': ['vis', None],
     'deg': ['deg', None],
     'dir': ['dir', None],
