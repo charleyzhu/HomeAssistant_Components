@@ -72,7 +72,7 @@ sensor:
         # 气压
         - pres
         # 温度
-        - Tmp
+        - tmp
         # 风向（360度）
         - deg
         # 风向
@@ -110,7 +110,7 @@ sensor:
         # 气压
         - pres
         # 温度
-        - Tmp
+        - tmp
         # 能见度
         - vis
         # 风向（360度）
