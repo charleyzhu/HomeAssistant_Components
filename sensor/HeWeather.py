@@ -28,6 +28,7 @@ CONF_SUGGESTION = 'suggestion'
 CONF_UPDATE_INTERVAL = 'interval'
 CONF_CITY = 'city'
 CONF_ISSHOWWEATHERPIC = 'isShowWeatherPic'
+CONF_ISDEBUG = 'isDebug'
 
 AQI_TYPES = {
     'aqi': ['AQI', None],
@@ -181,6 +182,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_API_KEY): cv.string,
     vol.Optional(CONF_CITY,default=None):cv.string,
     vol.Optional(CONF_ISSHOWWEATHERPIC,default=False):cv.boolean,
+    vol.Optional(CONF_ISDEBUG,default=False):cv.boolean,
     vol.Optional(CONF_UPDATE_INTERVAL, default=timedelta(seconds=120)): (vol.All(cv.time_period, cv.positive_timedelta)),
 
 })
@@ -195,6 +197,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     interval = config.get(CONF_UPDATE_INTERVAL)
     city = config.get(CONF_CITY)
     isShowWeatherPic = config.get(CONF_ISSHOWWEATHERPIC)
+    isDebug = config.get(CONF_ISDEBUG)
     monitored_conditions = config[CONF_MONITORED_CONDITIONS]
 
     if None in (latitude, longitude) and None == city :
@@ -210,6 +213,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         latitude = latitude,
         longitude = longitude,
         city = city,
+        isDebug= isDebug,
         interval = interval
     )
     weatherData.update()
@@ -641,11 +645,12 @@ class HeWeatherSensor(Entity):
             self._state = statusData
 
 class HeWeatherData(object):
-    def __init__(self,api_key,latitude ,longitude,city,interval):
+    def __init__(self,api_key,latitude ,longitude,city,interval,isDebug):
         self._api_key = api_key
         self.latitude = latitude
         self.longitude = longitude
         self.city = city
+        self.isDebug = isDebug
 
         self.data = None
 
@@ -682,6 +687,8 @@ class HeWeatherData(object):
             _Log.error('Json Status Not Good!')
             return
         self.data =HeWeather5Dic
+        if self.isDebug:
+            _Log.info('HeWeather5DicData:%s' % self.data)
 
     def GetDataBySensor_Type(self,sensor_Type):
         if self.data == None:
