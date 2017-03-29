@@ -27,6 +27,7 @@ CONF_NOW = 'now'
 CONF_SUGGESTION = 'suggestion'
 CONF_UPDATE_INTERVAL = 'interval'
 CONF_CITY = 'city'
+CONF_ISSHOWWEATHERPIC = 'isShowWeatherPic'
 
 AQI_TYPES = {
     'aqi': ['AQI', None],
@@ -179,6 +180,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_LONGITUDE): cv.longitude,
     vol.Optional(CONF_API_KEY): cv.string,
     vol.Optional(CONF_CITY,default=None):cv.string,
+    vol.Optional(CONF_ISSHOWWEATHERPIC,default=False):cv.boolean,
     vol.Optional(CONF_UPDATE_INTERVAL, default=timedelta(seconds=120)): (vol.All(cv.time_period, cv.positive_timedelta)),
 
 })
@@ -192,6 +194,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     api_key = config.get(CONF_API_KEY,None)
     interval = config.get(CONF_UPDATE_INTERVAL)
     city = config.get(CONF_CITY)
+    isShowWeatherPic = config.get(CONF_ISSHOWWEATHERPIC)
     monitored_conditions = config[CONF_MONITORED_CONDITIONS]
 
     if None in (latitude, longitude) and None == city :
@@ -222,7 +225,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(aqiSensor) == 0:
                 sensor_Name = AQI_TYPES['aqi'][0]
                 measurement =  AQI_TYPES['aqi'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_AQI, 'aqi', sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_AQI, 'aqi', sensor_Name, isShowWeatherPic,measurement))
             for sensor in aqiSensor:
                 sensor_Name = AQI_TYPES[sensor][0]
                 measurement = AQI_TYPES[sensor][1]
@@ -234,11 +237,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(DaySensor) == 0:
                 sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
                 measurement = DAY_FORECAST_TYPES['Weather_d'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, 'Weather_d', sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, 'Weather_d', sensor_Name, isShowWeatherPic,measurement))
             for sensor in DaySensor:
                 sensor_Name = DAY_FORECAST_TYPES[sensor][0]
                 measurement = DAY_FORECAST_TYPES[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, sensor, sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, sensor, sensor_Name, isShowWeatherPic,measurement))
 
     if CONF_TOMORROW_FORECAST in monitored_conditions:
         DaySensor = monitored_conditions[CONF_TOMORROW_FORECAST]
@@ -251,7 +254,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 for sensor in DaySensor:
                     sensor_Name = DAY_FORECAST_TYPES[sensor][0]
                     measurement = DAY_FORECAST_TYPES[sensor][1]
-                    dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, sensor, sensor_Name,measurement))
+                    dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, sensor, sensor_Name, isShowWeatherPic,measurement))
 
     if CONF_OFTERTOMORROW_FORECAST in monitored_conditions:
         DaySensor = monitored_conditions[CONF_OFTERTOMORROW_FORECAST]
@@ -259,11 +262,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(DaySensor) == 0:
                 sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
                 measurement = DAY_FORECAST_TYPES['Weather_d'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, 'Weather_d', sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, 'Weather_d', sensor_Name, isShowWeatherPic,measurement))
             for sensor in DaySensor:
                 sensor_Name = DAY_FORECAST_TYPES[sensor][0]
                 measurement = DAY_FORECAST_TYPES[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, sensor, sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, sensor, sensor_Name, isShowWeatherPic,measurement))
 
     if CONF_1HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_1HOUR_FORECAST]
@@ -271,11 +274,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, 'Weather', sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic,measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, sensor, sensor_Name,measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic,measurement))
 
     if CONF_3HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_3HOUR_FORECAST]
@@ -283,11 +286,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_6HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_6HOUR_FORECAST]
@@ -295,11 +298,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_9HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_9HOUR_FORECAST]
@@ -307,11 +310,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_12HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_12HOUR_FORECAST]
@@ -319,11 +322,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_15HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_15HOUR_FORECAST]
@@ -331,11 +334,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_18HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_18HOUR_FORECAST]
@@ -343,11 +346,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_21HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_21HOUR_FORECAST]
@@ -355,11 +358,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(HourSensor) == 0:
                 sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
                 measurement = HOUR_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in HourSensor:
                 sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
                 measurement = HOUR_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_NOW in monitored_conditions:
         NowSensor = monitored_conditions[CONF_NOW]
@@ -367,11 +370,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if len(NowSensor) == 0:
                 sensor_Name = NOW_FORECAST_TYPE['Weather'][0]
                 measurement = NOW_FORECAST_TYPE['Weather'][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_NOW, 'Weather', sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_NOW, 'Weather', sensor_Name, isShowWeatherPic, measurement))
             for sensor in NowSensor:
                 sensor_Name = NOW_FORECAST_TYPE[sensor][0]
                 measurement = NOW_FORECAST_TYPE[sensor][1]
-                dev.append(HeWeatherSensor(weatherData, CONF_NOW, sensor, sensor_Name, measurement))
+                dev.append(HeWeatherSensor(weatherData, CONF_NOW, sensor, sensor_Name, isShowWeatherPic, measurement))
 
     if CONF_SUGGESTION in monitored_conditions:
         SuggestionSensor = monitored_conditions[CONF_SUGGESTION]
@@ -381,21 +384,22 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 if len(sensors) == 0:
                     sensor_Name = SUGGESTION_FORECAST_TYPE['brf'][0]
                     measurement = SUGGESTION_FORECAST_TYPE['brf'][1]
-                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name, measurement,variable))
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name, isShowWeatherPic, measurement,variable))
                 for sensor in sensors:
                     sensor_Name = SUGGESTION_FORECAST_TYPE[sensor][0]
                     measurement = SUGGESTION_FORECAST_TYPE[sensor][1]
-                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name, measurement,variable))
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name, isShowWeatherPic, measurement,variable))
 
     add_devices(dev, True)
 
 class HeWeatherSensor(Entity):
-    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name,measurement = None,suggestionType = None):
+    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name,isShowWeatherPic,measurement = None,suggestionType = None):
         """Initialize the sensor."""
         self.weatherData = weatherData
         self._sensor_Type = sensor_Type
         self._sensor = sensor
         self._name = sensor_Name
+        self._isShowWeatherPic = isShowWeatherPic
         self._unit_of_measurement = measurement
         self._suggestionType = suggestionType
 
@@ -437,12 +441,10 @@ class HeWeatherSensor(Entity):
     @property
     def entity_picture(self):
         """Weather symbol if type is symbol."""
+        if not self._isShowWeatherPic:
+            return
         if self._sensor != 'Weather_d' and self._sensor != 'Weather_n' and self._sensor != 'Weather':
             return None
-        # elif self._sensor != 'Weather_n':
-        #     return None
-        # elif self._sensor != 'Weather':
-        #     return None
 
         if self._weatherCode == None:
             return
@@ -652,11 +654,11 @@ class HeWeatherData(object):
 
     def _update(self):
         city = '%s,%s' % (self.longitude,self.latitude)
-        _Log.error('city:%s' % city)
+
         if not None == self.city:
             city = self.city
         interface = 'https://api.heweather.com/v5/weather?city=%s&key=%s' % (city ,self._api_key)
-        _Log.error('interface:%s' % interface)
+        
         resp = requests.get(interface)
 
         if resp.status_code != 200:
