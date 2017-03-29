@@ -1,7 +1,6 @@
 import logging
 import voluptuous as vol
 from datetime import timedelta
-import json
 
 from homeassistant.const import TEMP_CELSIUS ,CONF_LATITUDE, CONF_LONGITUDE,CONF_API_KEY
 from homeassistant.helpers.entity import Entity
@@ -9,8 +8,7 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util import Throttle
 from homeassistant.const import (
-    CONF_MONITORED_CONDITIONS,
-    ATTR_ATTRIBUTION)
+    CONF_MONITORED_CONDITIONS)
 import requests
 
 CONF_AQI = 'aqi'
@@ -66,7 +64,7 @@ HOUR_FORECAST_TYPE = {
     'hum': ['Hour_HUM', None],
     'pop': ['Hour_POP', None],
     'pres': ['Hour_PRES', None],
-    'Tmp': ['Hour_Tmp', None],
+    'tmp': ['Hour_Tmp', '°C'],
     'deg': ['Hour_DEG', None],
     'dir': ['Hour_DIR', None],
     'sc': ['Hour_SC', None],
@@ -79,12 +77,74 @@ NOW_FORECAST_TYPE = {
     'hum': ['Now_HUM', None],
     'pcpn': ['Now_PCPN', None],
     'pres': ['Now_PRES', None],
-    'Tmp': ['Now_Tmp', None],
+    'tmp': ['Now_Tmp', '°C'],
     'vis': ['Now_VIS', None],
     'deg': ['Now_DEG', None],
     'dir': ['Now_DIR', None],
     'sc': ['Now_SC', None],
     'spd': ['Now_SPD', None],
+}
+
+Weather_images = {
+    '100':'http://www.z4a.net/images/2017/03/29/100.png',
+    '101':'http://www.z4a.net/images/2017/03/29/101.png',
+    '102':'http://www.z4a.net/images/2017/03/29/102.png',
+    '103':'http://www.z4a.net/images/2017/03/29/103.png',
+    '104':'http://www.z4a.net/images/2017/03/29/104.png',
+
+    '200':'http://www.z4a.net/images/2017/03/29/200.png',
+    '201':'http://www.z4a.net/images/2017/03/29/201.png',
+    '202':'http://www.z4a.net/images/2017/03/29/202.png',
+    '203':'http://www.z4a.net/images/2017/03/29/202.png',
+    '204':'http://www.z4a.net/images/2017/03/29/202.png',
+    '205':'http://www.z4a.net/images/2017/03/29/205.png',
+    '206':'http://www.z4a.net/images/2017/03/29/205.png',
+    '207':'http://www.z4a.net/images/2017/03/29/205.png',
+    '208':'http://www.z4a.net/images/2017/03/29/208.png',
+    '209':'http://www.z4a.net/images/2017/03/29/208.png',
+    '210':'http://www.z4a.net/images/2017/03/29/208.png',
+    '211':'http://www.z4a.net/images/2017/03/29/208.png',
+    '212':'http://www.z4a.net/images/2017/03/29/208.png',
+    '213':'http://www.z4a.net/images/2017/03/29/208.png',
+
+    '300':'http://www.z4a.net/images/2017/03/29/300.png',
+    '301':'http://www.z4a.net/images/2017/03/29/301.png',
+    '302':'http://www.z4a.net/images/2017/03/29/302.png',
+    '303':'http://www.z4a.net/images/2017/03/29/303.png',
+    '304':'http://www.z4a.net/images/2017/03/29/304.png',
+    '305':'http://www.z4a.net/images/2017/03/29/305.png',
+    '306':'http://www.z4a.net/images/2017/03/29/306.png',
+    '307':'http://www.z4a.net/images/2017/03/29/307.png',
+    '308':'http://www.z4a.net/images/2017/03/29/308.png',
+    '309':'http://www.z4a.net/images/2017/03/29/309.png',
+    '310':'http://www.z4a.net/images/2017/03/29/310.png',
+    '311':'http://www.z4a.net/images/2017/03/29/311.png',
+    '312':'http://www.z4a.net/images/2017/03/29/311.png',
+    '313':'http://www.z4a.net/images/2017/03/29/313.png',
+
+
+    '400':'http://www.z4a.net/images/2017/03/29/400.png',
+    '401':'http://www.z4a.net/images/2017/03/29/401.png',
+    '402':'http://www.z4a.net/images/2017/03/29/402.png',
+    '403':'http://www.z4a.net/images/2017/03/29/403.png',
+    '404':'http://www.z4a.net/images/2017/03/29/404.png',
+    '405':'http://www.z4a.net/images/2017/03/29/405.png',
+    '406':'http://www.z4a.net/images/2017/03/29/406.png',
+    '407':'http://www.z4a.net/images/2017/03/29/407.png',
+
+    '500':'http://www.z4a.net/images/2017/03/29/500.png',
+    '501':'http://www.z4a.net/images/2017/03/29/501.png',
+    '502':'http://www.z4a.net/images/2017/03/29/502.png',
+    '503':'http://www.z4a.net/images/2017/03/29/503.png',
+    '504':'http://www.z4a.net/images/2017/03/29/504.png',
+    '505':'http://www.z4a.net/images/2017/03/29/504.png',
+    '506':'http://www.z4a.net/images/2017/03/29/504.png',
+    '507':'http://www.z4a.net/images/2017/03/29/507.png',
+    '508':'http://www.z4a.net/images/2017/03/29/508.png',
+
+    '900':'http://www.z4a.net/images/2017/03/29/900.png',
+    '901':'http://www.z4a.net/images/2017/03/29/901.png',
+    '999':'http://www.z4a.net/images/2017/03/29/999.png',
 }
 
 SUGGESTION_FORECAST_TYPE = {
@@ -124,6 +184,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 _Log=logging.getLogger(__name__)
+
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     latitude = config.get(CONF_LATITUDE, hass.config.latitude)
@@ -314,30 +375,32 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     if CONF_SUGGESTION in monitored_conditions:
         SuggestionSensor = monitored_conditions[CONF_SUGGESTION]
-        if isinstance(NowSensor, list):
+        if isinstance(SuggestionSensor, dict):
             for variable in SuggestionSensor:
                 sensors = SuggestionSensor[variable]
-                if len(NowSensor) == 0:
+                if len(sensors) == 0:
                     sensor_Name = SUGGESTION_FORECAST_TYPE['brf'][0]
                     measurement = SUGGESTION_FORECAST_TYPE['brf'][1]
-                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name, measurement))
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name, measurement,variable))
                 for sensor in sensors:
                     sensor_Name = SUGGESTION_FORECAST_TYPE[sensor][0]
                     measurement = SUGGESTION_FORECAST_TYPE[sensor][1]
-                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name, measurement))
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name, measurement,variable))
 
     add_devices(dev, True)
 
 class HeWeatherSensor(Entity):
-    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name,measurement = None):
+    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name,measurement = None,suggestionType = None):
         """Initialize the sensor."""
         self.weatherData = weatherData
         self._sensor_Type = sensor_Type
         self._sensor = sensor
         self._name = sensor_Name
         self._unit_of_measurement = measurement
+        self._suggestionType = suggestionType
 
         self._state = None
+        self._weatherCode = None
 
     @property
     def name(self):
@@ -374,12 +437,19 @@ class HeWeatherSensor(Entity):
     @property
     def entity_picture(self):
         """Weather symbol if type is symbol."""
-        # if self._sensor != 'Weather_d' or self._sensor != 'Weather':
+        if self._sensor != 'Weather_d' and self._sensor != 'Weather_n' and self._sensor != 'Weather':
+            return None
+        # elif self._sensor != 'Weather_n':
         #     return None
-        #
-        #
-        #
-        #
+        # elif self._sensor != 'Weather':
+        #     return None
+
+        if self._weatherCode == None:
+            return
+        return Weather_images[self._weatherCode]
+
+
+
     @property
     def state(self):
         """Return the state of the sensor."""
@@ -391,9 +461,11 @@ class HeWeatherSensor(Entity):
 
     def update(self):
         self.weatherData.update()
-
+        # _Log.error('_sensor_Type ==%s' % self._sensor)
         if self._sensor_Type == CONF_AQI:
             data = self.weatherData.GetDataBySensor_Type(self._sensor_Type)
+            if data == None:
+                return
             if 'city' in data:
                 cityData = data['city']
                 if self._sensor in cityData:
@@ -402,42 +474,100 @@ class HeWeatherSensor(Entity):
 
         elif self._sensor_Type == CONF_TODAY_FORECAST:
             data = self.weatherData.GetDataBySensor_Type('daily_forecast')
-            if len(data) == 3:
+            if data == None:
+                return
+            if len(data) > 0 :
                 dayData = data[0]
                 self._SetDay_Forecast_Status(dayData)
-
         elif self._sensor_Type == CONF_TOMORROW_FORECAST:
             data = self.weatherData.GetDataBySensor_Type('daily_forecast')
-            if len(data) == 3:
+            if data == None:
+                return
+            if len(data) > 1:
                 dayData = data[1]
                 self._SetDay_Forecast_Status(dayData)
-
         elif self._sensor_Type == CONF_OFTERTOMORROW_FORECAST:
             data = self.weatherData.GetDataBySensor_Type('daily_forecast')
-            if len(data) == 3:
+            if data == None:
+                return
+            if len(data) > 2:
                 dayData = data[2]
                 self._SetDay_Forecast_Status(dayData)
 
         elif self._sensor_Type == CONF_1HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 0:
+                HourData = data[0]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_3HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 2:
+                HourData = data[2]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_6HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 3:
+                HourData = data[3]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_9HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 4:
+                HourData = data[4]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_12HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 5:
+                HourData = data[5]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_15HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 6:
+                HourData = data[6]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_18HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 7:
+                HourData = data[7]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_21HOUR_FORECAST:
-            pass
+            data = self.weatherData.GetDataBySensor_Type('hourly_forecast')
+            if data == None:
+                return
+            if len(data) > 8:
+                HourData = data[8]
+                self._SetHourly_Forecast_Status(HourData)
         elif self._sensor_Type == CONF_NOW:
-            pass
+            NowData = self.weatherData.GetDataBySensor_Type('now')
+            if NowData == None:
+                return
+            self._SetHourly_Forecast_Status(NowData)
         elif self._sensor_Type == CONF_SUGGESTION:
-            pass
+            suggestionData = self.weatherData.GetDataBySensor_Type('suggestion')
+            if suggestionData == None:
+                return
+            if self._suggestionType == None:
+                return
+
+            if self._suggestionType in suggestionData:
+                sData = suggestionData[self._suggestionType]
+                if self._sensor in sData:
+                    statusData = sData[self._sensor]
+                    self._state = statusData
+
     # SetDaily_forecast Data
     def _SetDay_Forecast_Status(self,dayData):
 
@@ -452,13 +582,18 @@ class HeWeatherSensor(Entity):
             if 'cond' in dayData:
                 condData = dayData['cond']
                 sensor = ''
+                code = ''
                 if self._sensor == 'Weather_d':
                     sensor = 'txt_d'
+                    code = 'code_d'
                 elif self._sensor == 'Weather_n':
                     sensor = 'txt_n'
+                    code = 'code_n'
                 if sensor in condData:
                     statusData = condData[sensor]
+                    codeData = condData[code]
                     self._state = statusData
+                    self._weatherCode = codeData
 
         elif self._sensor in ('maxTmp', 'minTmp'):
             if 'tmp' in dayData:
@@ -482,6 +617,25 @@ class HeWeatherSensor(Entity):
 
         if self._sensor in dayData:
             statusData = dayData[self._sensor]
+            self._state = statusData
+    def _SetHourly_Forecast_Status(self,hourlyData):
+        if self._sensor == 'Weather':
+            if 'cond' in hourlyData:
+                condData = hourlyData['cond']
+                statusData = condData['txt']
+                codeData = condData['code']
+                self._state = statusData
+                self._weatherCode = codeData
+
+        elif self._sensor in ('deg', 'dir', 'sc', 'spd'):
+            if 'wind' in hourlyData:
+                windData = hourlyData['wind']
+                if self._sensor in windData:
+                    statusData = windData[self._sensor]
+                    self._state = statusData
+
+        if self._sensor in hourlyData:
+            statusData = hourlyData[self._sensor]
             self._state = statusData
 
 class HeWeatherData(object):
