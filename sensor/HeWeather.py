@@ -652,9 +652,11 @@ class HeWeatherData(object):
 
     def _update(self):
         city = '%s,%s' % (self.longitude,self.latitude)
-        if not None == city:
+        _Log.error('city:%s' % city)
+        if not None == self.city:
             city = self.city
         interface = 'https://api.heweather.com/v5/weather?city=%s&key=%s' % (city ,self._api_key)
+        _Log.error('interface:%s' % interface)
         resp = requests.get(interface)
 
         if resp.status_code != 200:
