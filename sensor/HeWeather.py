@@ -28,14 +28,15 @@ CONF_21HOUR_FORECAST = '21Hour_forecast'
 CONF_NOW = 'now'
 CONF_SUGGESTION = 'suggestion'
 CONF_UPDATE_INTERVAL = 'interval'
+CONF_CITY = 'city'
 
 AQI_TYPES = {
     'aqi': ['AQI', None],
     "co": ['AQI_CO', None],
     "no2": ['AQI_NO2', None],
     "o3": ['AQI_O3', None],
-    "pm10": ['AQI_PM10', None],
-    "pm25": ['AQI_PM25', None],
+    "pm10": ['AQI_PM10', 'mg/m3'],
+    "pm25": ['AQI_PM25', 'μg/m3'],
     "qlty": ['AQI_QLTY', None],
     "so2": ['AQI_SO2', None],
 }
@@ -50,8 +51,8 @@ DAY_FORECAST_TYPES =  {
     'hum': ['Day_HUM', None],
     'pop': ['Day_POP', None],
     'pres': ['Day_PRES', None],
-    'maxTmp': ['Day_MaxTmp', None],
-    'minTmp': ['Day_MinTmp', None],
+    'maxTmp': ['Day_MaxTmp', '°C'],
+    'minTmp': ['Day_MinTmp', '°C'],
     'uv': ['Day_UV', None],
     'vis': ['Day_VIS', None],
     'deg': ['Day_DEG', None],
@@ -97,19 +98,19 @@ MODULE_SUGGESTION = vol.Schema({
 
 MODULE_SCHEMA = vol.Schema({
     vol.Required(CONF_AQI,default=[]):vol.All(cv.ensure_list,[vol.In(AQI_TYPES)]),
-    vol.Required(CONF_TODAY_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
-    vol.Required(CONF_TOMORROW_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
-    vol.Required(CONF_OFTERTOMORROW_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
-    vol.Required(CONF_1HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_3HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_6HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_9HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_12HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_15HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_18HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_21HOUR_FORECAST,default=[]):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
-    vol.Required(CONF_NOW,default=[]):vol.All(cv.ensure_list, [vol.In(NOW_FORECAST_TYPE)]),
-    vol.Required(CONF_SUGGESTION,default=[]): MODULE_SUGGESTION,
+    vol.Required(CONF_TODAY_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_TOMORROW_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_OFTERTOMORROW_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(DAY_FORECAST_TYPES)]),
+    vol.Required(CONF_1HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_3HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_6HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_9HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_12HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_15HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_18HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_21HOUR_FORECAST,default=None):vol.All(cv.ensure_list, [vol.In(HOUR_FORECAST_TYPE)]),
+    vol.Required(CONF_NOW,default=None):vol.All(cv.ensure_list, [vol.In(NOW_FORECAST_TYPE)]),
+    vol.Required(CONF_SUGGESTION,default=None): MODULE_SUGGESTION,
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -117,6 +118,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_LATITUDE): cv.latitude,
     vol.Optional(CONF_LONGITUDE): cv.longitude,
     vol.Optional(CONF_API_KEY): cv.string,
+    vol.Optional(CONF_CITY,default=None):cv.string,
     vol.Optional(CONF_UPDATE_INTERVAL, default=timedelta(seconds=120)): (vol.All(cv.time_period, cv.positive_timedelta)),
 
 })
@@ -128,15 +130,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     longitude = config.get(CONF_LONGITUDE, hass.config.longitude)
     api_key = config.get(CONF_API_KEY,None)
     interval = config.get(CONF_UPDATE_INTERVAL)
+    city = config.get(CONF_CITY)
     monitored_conditions = config[CONF_MONITORED_CONDITIONS]
 
-    if latitude == 0:
-        _Log.error('Pls enter latitude!')
+    if None in (latitude, longitude) and None == city :
+        _Log.error("Latitude or longitude or city not set in Home Assistant config")
         return False
 
-    if longitude == 0:
-        _Log.error('Pls enter longitude!')
-        return False
     if api_key == None:
         _Log.error('Pls enter api_key!')
         return False
@@ -145,9 +145,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         api_key = api_key,
         latitude = latitude,
         longitude = longitude,
+        city = city,
         interval = interval
     )
     weatherData.update()
+    weatherData.GetDataBySensor_Type(CONF_AQI)
     if weatherData.data == None:
         _Log.error('weatherData is nil')
         return False
@@ -155,139 +157,185 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     dev = []
     if  CONF_AQI in monitored_conditions:
         aqiSensor = monitored_conditions['aqi']
-        if len(aqiSensor) == 0:
-            dev.append(HeWeatherSensor(weatherData, CONF_AQI, 'aqi', 'AQI'))
-        for sensor in aqiSensor:
-            sensor_Name = AQI_TYPES[sensor][0]
-            dev.append(HeWeatherSensor(weatherData,CONF_AQI,sensor,sensor_Name))
+        if isinstance(aqiSensor, list):
+            if len(aqiSensor) == 0:
+                sensor_Name = AQI_TYPES['aqi'][0]
+                measurement =  AQI_TYPES['aqi'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_AQI, 'aqi', sensor_Name,measurement))
+            for sensor in aqiSensor:
+                sensor_Name = AQI_TYPES[sensor][0]
+                measurement = AQI_TYPES[sensor][1]
+                dev.append(HeWeatherSensor(weatherData,CONF_AQI,sensor,sensor_Name,measurement))
 
     if CONF_TODAY_FORECAST in monitored_conditions:
         DaySensor = monitored_conditions[CONF_TODAY_FORECAST]
-        if len(DaySensor) == 0:
-            sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, 'Weather_d', sensor_Name))
-        for sensor in DaySensor:
-            sensor_Name = DAY_FORECAST_TYPES[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, sensor, sensor_Name))
+        if isinstance(DaySensor,list):
+            if len(DaySensor) == 0:
+                sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
+                measurement = DAY_FORECAST_TYPES['Weather_d'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, 'Weather_d', sensor_Name,measurement))
+            for sensor in DaySensor:
+                sensor_Name = DAY_FORECAST_TYPES[sensor][0]
+                measurement = DAY_FORECAST_TYPES[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_TODAY_FORECAST, sensor, sensor_Name,measurement))
 
     if CONF_TOMORROW_FORECAST in monitored_conditions:
         DaySensor = monitored_conditions[CONF_TOMORROW_FORECAST]
-        if len(DaySensor) == 0:
-            sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, 'Weather_d',sensor_Name))
-        for sensor in DaySensor:
-            sensor_Name = DAY_FORECAST_TYPES[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, sensor, sensor_Name))
+        if isinstance(DaySensor, list):
+            if isinstance(DaySensor, list):
+                if len(DaySensor) == 0:
+                    sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
+                    measurement = DAY_FORECAST_TYPES['Weather_d'][1]
+                    dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, 'Weather_d',sensor_Name,measurement))
+                for sensor in DaySensor:
+                    sensor_Name = DAY_FORECAST_TYPES[sensor][0]
+                    measurement = DAY_FORECAST_TYPES[sensor][1]
+                    dev.append(HeWeatherSensor(weatherData, CONF_TOMORROW_FORECAST, sensor, sensor_Name,measurement))
 
     if CONF_OFTERTOMORROW_FORECAST in monitored_conditions:
         DaySensor = monitored_conditions[CONF_OFTERTOMORROW_FORECAST]
-        if len(DaySensor) == 0:
-            sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, 'Weather_d', sensor_Name))
-        for sensor in DaySensor:
-            sensor_Name = DAY_FORECAST_TYPES[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, sensor, sensor_Name))
+        if isinstance(DaySensor, list):
+            if len(DaySensor) == 0:
+                sensor_Name = DAY_FORECAST_TYPES['Weather_d'][0]
+                measurement = DAY_FORECAST_TYPES['Weather_d'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, 'Weather_d', sensor_Name,measurement))
+            for sensor in DaySensor:
+                sensor_Name = DAY_FORECAST_TYPES[sensor][0]
+                measurement = DAY_FORECAST_TYPES[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_OFTERTOMORROW_FORECAST, sensor, sensor_Name,measurement))
 
     if CONF_1HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_1HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, 'Weather', sensor_Name,measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_1HOUR_FORECAST, sensor, sensor_Name,measurement))
 
     if CONF_3HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_3HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_3HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_6HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_6HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_6HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_9HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_9HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_9HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_12HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_12HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_12HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_15HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_15HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_15HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_18HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_18HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_18HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_21HOUR_FORECAST in monitored_conditions:
         HourSensor = monitored_conditions[CONF_21HOUR_FORECAST]
-        if len(HourSensor) == 0:
-            sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, 'Weather', sensor_Name))
-        for sensor in HourSensor:
-            sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, sensor, sensor_Name))
+        if isinstance(HourSensor, list):
+            if len(HourSensor) == 0:
+                sensor_Name = HOUR_FORECAST_TYPE['Weather'][0]
+                measurement = HOUR_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, 'Weather', sensor_Name, measurement))
+            for sensor in HourSensor:
+                sensor_Name = HOUR_FORECAST_TYPE[sensor][0]
+                measurement = HOUR_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_21HOUR_FORECAST, sensor, sensor_Name, measurement))
 
     if CONF_NOW in monitored_conditions:
         NowSensor = monitored_conditions[CONF_NOW]
-        if len(NowSensor) == 0:
-            sensor_Name = NOW_FORECAST_TYPE['Weather'][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_NOW, 'Weather', sensor_Name))
-        for sensor in NowSensor:
-            sensor_Name = NOW_FORECAST_TYPE[sensor][0]
-            dev.append(HeWeatherSensor(weatherData, CONF_NOW, sensor, sensor_Name))
+        if isinstance(NowSensor, list):
+            if len(NowSensor) == 0:
+                sensor_Name = NOW_FORECAST_TYPE['Weather'][0]
+                measurement = NOW_FORECAST_TYPE['Weather'][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_NOW, 'Weather', sensor_Name, measurement))
+            for sensor in NowSensor:
+                sensor_Name = NOW_FORECAST_TYPE[sensor][0]
+                measurement = NOW_FORECAST_TYPE[sensor][1]
+                dev.append(HeWeatherSensor(weatherData, CONF_NOW, sensor, sensor_Name, measurement))
 
     if CONF_SUGGESTION in monitored_conditions:
         SuggestionSensor = monitored_conditions[CONF_SUGGESTION]
-        for variable in SuggestionSensor:
-            sensors = SuggestionSensor[variable]
-            if len(NowSensor) == 0:
-                sensor_Name = SUGGESTION_FORECAST_TYPE['brf'][0]
-                dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name))
-            for sensor in sensors:
-                sensor_Name = SUGGESTION_FORECAST_TYPE[sensor][0]
-                dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name))
+        if isinstance(NowSensor, list):
+            for variable in SuggestionSensor:
+                sensors = SuggestionSensor[variable]
+                if len(NowSensor) == 0:
+                    sensor_Name = SUGGESTION_FORECAST_TYPE['brf'][0]
+                    measurement = SUGGESTION_FORECAST_TYPE['brf'][1]
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, 'brf', sensor_Name, measurement))
+                for sensor in sensors:
+                    sensor_Name = SUGGESTION_FORECAST_TYPE[sensor][0]
+                    measurement = SUGGESTION_FORECAST_TYPE[sensor][1]
+                    dev.append(HeWeatherSensor(weatherData, CONF_SUGGESTION, sensor, sensor_Name, measurement))
 
     add_devices(dev, True)
 
 class HeWeatherSensor(Entity):
-    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name):
+    def __init__(self,weatherData,sensor_Type,sensor,sensor_Name,measurement = None):
         """Initialize the sensor."""
         self.weatherData = weatherData
         self._sensor_Type = sensor_Type
+        self._sensor = sensor
         self._name = sensor_Name
+        self._unit_of_measurement = measurement
 
         self._state = None
 
@@ -324,29 +372,135 @@ class HeWeatherSensor(Entity):
             return self._name
 
     @property
+    def entity_picture(self):
+        """Weather symbol if type is symbol."""
+        # if self._sensor != 'Weather_d' or self._sensor != 'Weather':
+        #     return None
+        #
+        #
+        #
+        #
+    @property
     def state(self):
         """Return the state of the sensor."""
-        pass
+        return self._state
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        pass
+        return self._unit_of_measurement
 
     def update(self):
-        pass
+        self.weatherData.update()
+
+        if self._sensor_Type == CONF_AQI:
+            data = self.weatherData.GetDataBySensor_Type(self._sensor_Type)
+            if 'city' in data:
+                cityData = data['city']
+                if self._sensor in cityData:
+                    statusData = cityData[self._sensor]
+                    self._state = statusData
+
+        elif self._sensor_Type == CONF_TODAY_FORECAST:
+            data = self.weatherData.GetDataBySensor_Type('daily_forecast')
+            if len(data) == 3:
+                dayData = data[0]
+                self._SetDay_Forecast_Status(dayData)
+
+        elif self._sensor_Type == CONF_TOMORROW_FORECAST:
+            data = self.weatherData.GetDataBySensor_Type('daily_forecast')
+            if len(data) == 3:
+                dayData = data[1]
+                self._SetDay_Forecast_Status(dayData)
+
+        elif self._sensor_Type == CONF_OFTERTOMORROW_FORECAST:
+            data = self.weatherData.GetDataBySensor_Type('daily_forecast')
+            if len(data) == 3:
+                dayData = data[2]
+                self._SetDay_Forecast_Status(dayData)
+
+        elif self._sensor_Type == CONF_1HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_3HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_6HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_9HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_12HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_15HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_18HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_21HOUR_FORECAST:
+            pass
+        elif self._sensor_Type == CONF_NOW:
+            pass
+        elif self._sensor_Type == CONF_SUGGESTION:
+            pass
+    # SetDaily_forecast Data
+    def _SetDay_Forecast_Status(self,dayData):
+
+        if self._sensor in ('mr', 'ms', 'sr', 'ss'):
+            if 'astro' in dayData:
+                astroData = dayData['astro']
+                if self._sensor in astroData:
+                    statusData = astroData[self._sensor]
+                    self._state = statusData
+
+        elif self._sensor in ('Weather_d', 'Weather_n'):
+            if 'cond' in dayData:
+                condData = dayData['cond']
+                sensor = ''
+                if self._sensor == 'Weather_d':
+                    sensor = 'txt_d'
+                elif self._sensor == 'Weather_n':
+                    sensor = 'txt_n'
+                if sensor in condData:
+                    statusData = condData[sensor]
+                    self._state = statusData
+
+        elif self._sensor in ('maxTmp', 'minTmp'):
+            if 'tmp' in dayData:
+                tmpData = dayData['tmp']
+                sensor = ''
+                if self._sensor == 'maxTmp':
+                    sensor = 'max'
+                elif self._sensor == 'minTmp':
+                    sensor = 'min'
+
+                if sensor in tmpData:
+                    statusData = tmpData[sensor]
+                    self._state = statusData
+
+        elif self._sensor in ('deg', 'dir', 'sc', 'spd'):
+            if 'wind' in dayData:
+                windData = dayData['wind']
+                if self._sensor in windData:
+                    statusData = windData[self._sensor]
+                    self._state = statusData
+
+        if self._sensor in dayData:
+            statusData = dayData[self._sensor]
+            self._state = statusData
 
 class HeWeatherData(object):
-    def __init__(self,api_key,latitude ,longitude,interval):
+    def __init__(self,api_key,latitude ,longitude,city,interval):
         self._api_key = api_key
         self.latitude = latitude
         self.longitude = longitude
+        self.city = city
 
         self.data = None
 
         self.update =  Throttle(interval)(self._update)
 
+
     def _update(self):
-        interface = 'https://free-api.heweather.com/v5/weather?city=%s,%s&key=%s' % (self.longitude,self.latitude,self._api_key)
+        city = '%s,%s' % (self.longitude,self.latitude)
+        if not None == city:
+            city = self.city
+        interface = 'https://api.heweather.com/v5/weather?city=%s&key=%s' % (city ,self._api_key)
         resp = requests.get(interface)
 
         if resp.status_code != 200:
@@ -370,3 +524,9 @@ class HeWeatherData(object):
             _Log.error('Json Status Not Good!')
             return
         self.data =HeWeather5Dic
+
+    def GetDataBySensor_Type(self,sensor_Type):
+        if self.data == None:
+            return None
+        if sensor_Type in self.data:
+            return self.data[sensor_Type]
