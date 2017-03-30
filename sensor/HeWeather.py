@@ -441,7 +441,7 @@ class HeWeatherSensor(Entity):
         if self._sensor_Type == CONF_NOW:
             return self._name
         if self._sensor_Type == CONF_SUGGESTION:
-            return self._name
+            return self._suggestionType + '_'+ self._name
 
     @property
     def entity_picture(self):
