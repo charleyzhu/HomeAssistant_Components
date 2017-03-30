@@ -239,13 +239,15 @@ HeWeather: 和风天气
         - spd
       # 生活指数
       suggestion:
-        # 舒适度指数
+        # 空气指数
         air:
+          # 简介
           - brf
+          # 数据详情
           - txt
-        # 洗车指数
+        # 舒适度指数
         comf:
-        # 穿衣指数
+        # 洗车指数
         cw:
         # 穿衣指数
         drsg:
