@@ -59,7 +59,6 @@ class WeatherChina(Entity):
         tmp = '%s'% self.getWeatherData("temp2")
         tmp = tmp[:-1]
         return tmp
-        return tmp
 
     @property
     def unit_of_measurement(self):
