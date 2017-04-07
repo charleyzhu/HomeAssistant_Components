@@ -27,7 +27,7 @@ copy all the files into the Home Assistant location. It can now be installed eit
 
 One Gateway
 
-WeatherChina:
+#### WeatherChina:
 Add the following line to the Configuration.yaml.
 ```
 sensor:
@@ -42,7 +42,7 @@ How get zhe citycode ,pls open [WeatherChina](http://www.weather.com.cn)
 ![WeatherChina](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/WeatherChina.png)
 
 
-Baidu TTS
+#### Baidu TTS
 Add the following line to the Configuration.yaml.
 ```
 tts:
@@ -65,6 +65,17 @@ person = 0  = Woman
 person = 1  = Man
 
 How get ApiKey and SecretKey? Please register [Baidu developer](http://yuyin.baidu.com)
+
+
+#### WuKong Remote Control:
+Add the following line to the Configuration.yaml.
+```
+switch:
+  - platform: WuKong
+    host: 172.16.1.55
+```
+- install [WuKong Remote Control](http://down1.wukongtv.com/yaokong/tv/wkremoteTV-guanwang-release.apk)
+- host is Android TV Box Ip Address
 
 # 中文
 
@@ -92,7 +103,7 @@ How get ApiKey and SecretKey? Please register [Baidu developer](http://yuyin.bai
  /srv/homeassistant/homeassistant_venv/lib/python3.4/site-packages/homeassistant/components
  ```
 
- WeatherChina:
+####  WeatherChina:
 在Configuration.yaml文件中添加一下字段
 ```
 sensor:
@@ -107,7 +118,7 @@ sensor:
 ![WeatherChina](https://raw.githubusercontent.com/charleyzhu/HomeAssistant_Components/master/Images/WeatherChina.png)
 
 
-HeWeather: 和风天气
+#### HeWeather: 和风天气
 
 除了API_KEY以外全是可选字段，API_KEY自己去和风天气[和风天气](https://www.heweather.com)注册
 
@@ -264,7 +275,7 @@ HeWeather: 和风天气
 ```
 
 
-Baidu TTS
+#### Baidu TTS
 在Configuration.yaml文件中添加一下字段
 ```
 tts:
@@ -286,3 +297,14 @@ person = 0  = 男声
 person = 1  = 女声
 
 怎么获取ApiKey和SecretKey? 请注册[百度开发者](http://yuyin.baidu.com)
+
+
+#### 悟空遥控:
+在Configuration.yaml文件中添加一下字段.
+```
+switch:
+  - platform: WuKong
+    host: 172.16.1.55
+```
+- 安装 [悟空遥控TV端](http://down1.wukongtv.com/yaokong/tv/wkremoteTV-guanwang-release.apk)
+- host: 安装了悟空遥控的安卓盒子(电视)的IP地址
