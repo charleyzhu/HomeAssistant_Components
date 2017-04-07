@@ -56,7 +56,8 @@ class WeatherChina(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        tmp = self.getWeatherData("temp2")
+        tmp = '%s'% self.getWeatherData("temp2")
+        tmp = tmp[:-1]
         return tmp
 
     @property
