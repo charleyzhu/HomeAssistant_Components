@@ -19,6 +19,7 @@ import socket,base64
 
 DOMAIN = 'Wu_Kong_Control'
 CONF_MODE = 'mode'
+CONF_PREFIX = 'PrefixName'
 _Log=logging.getLogger(__name__)
 
 PACKAGES = {
@@ -50,6 +51,7 @@ PACKAGES = {
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST,default=None):cv.string,
     vol.Required(CONF_MODE,default='http'):cv.string,
+    vol.Required(CONF_PREFIX,default=None):cv.string,
 })
 
 # pylint: disable=unused-argument
@@ -57,6 +59,7 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     """Setup the demo switches."""
     host = config.get(CONF_HOST)
     mode =  config.get(CONF_MODE)
+    prefix = config.get(CONF_PREFIX)
     if host == None:
         _Log.error('pls enter host ip address!')
         return False
@@ -78,27 +81,27 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
 
 
     add_devices_callback([
-        WuKongSwitch(hass, host, 'tv_ctl_up', False, 'mdi:arrow-up-bold-circle', True, mode,19),
-        WuKongSwitch(hass, host, 'tv_ctl_down', False, 'mdi:arrow-down-bold-circle', True, mode,20),
-        WuKongSwitch(hass, host, 'tv_ctl_left', False, 'mdi:arrow-left-bold-circle', True, mode,21),
-        WuKongSwitch(hass, host, 'tv_ctl_right', False, 'mdi:arrow-right-bold-circle', True, mode,22),
-        WuKongSwitch(hass, host, 'tv_ctl_home', False, 'mdi:home', True, mode,3),
-        WuKongSwitch(hass, host, 'tv_ctl_back', False, 'mdi:backup-restore', True, mode,4),
-        WuKongSwitch(hass, host, 'tv_ctl_ok', False, 'mdi:adjust', True, mode,23),
-        WuKongSwitch(hass, host, 'tv_ctl_volup', False, 'mdi:volume-high', True, mode,24),
-        WuKongSwitch(hass, host, 'tv_ctl_voldown', False, 'mdi:volume-medium', True, mode,25),
-        WuKongSwitch(hass, host, 'tv_ctl_power', False, 'mdi:power', True, mode, 26),
-        WuKongSwitch(hass, host, 'tv_ctl_menu', False, 'mdi:menu', True, mode, 82),
-        WuKongSwitch(hass, host, 'tv_ctl_1', False, 'mdi:numeric-1-box', True, mode,8),
-        WuKongSwitch(hass, host, 'tv_ctl_2', False, 'mdi:numeric-2-box', True, mode,9),
-        WuKongSwitch(hass, host, 'tv_ctl_3', False, 'mdi:numeric-3-box', True, mode,10),
-        WuKongSwitch(hass, host, 'tv_ctl_4', False, 'mdi:numeric-4-box', True, mode,11),
-        WuKongSwitch(hass, host, 'tv_ctl_5', False, 'mdi:numeric-5-box', True, mode,12),
-        WuKongSwitch(hass, host, 'tv_ctl_6', False, 'mdi:numeric-6-box', True, mode,13),
-        WuKongSwitch(hass, host, 'tv_ctl_7', False, 'mdi:numeric-7-box', True, mode,14),
-        WuKongSwitch(hass, host, 'tv_ctl_8', False, 'mdi:numeric-8-box', True, mode,15),
-        WuKongSwitch(hass, host, 'tv_ctl_9', False, 'mdi:numeric-9-box', True, mode,16),
-        WuKongSwitch(hass, host, 'tv_ctl_0', False, 'mdi:numeric-0-box', True, mode,7),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_up', False, 'mdi:arrow-up-bold-circle', True, mode,19),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_down', False, 'mdi:arrow-down-bold-circle', True, mode,20),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_left', False, 'mdi:arrow-left-bold-circle', True, mode,21),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_right', False, 'mdi:arrow-right-bold-circle', True, mode,22),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_home', False, 'mdi:home', True, mode,3),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_back', False, 'mdi:backup-restore', True, mode,4),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_ok', False, 'mdi:adjust', True, mode,23),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_volup', False, 'mdi:volume-high', True, mode,24),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_voldown', False, 'mdi:volume-medium', True, mode,25),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_power', False, 'mdi:power', True, mode, 26),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_menu', False, 'mdi:menu', True, mode, 82),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_1', False, 'mdi:numeric-1-box', True, mode,8),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_2', False, 'mdi:numeric-2-box', True, mode,9),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_3', False, 'mdi:numeric-3-box', True, mode,10),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_4', False, 'mdi:numeric-4-box', True, mode,11),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_5', False, 'mdi:numeric-5-box', True, mode,12),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_6', False, 'mdi:numeric-6-box', True, mode,13),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_7', False, 'mdi:numeric-7-box', True, mode,14),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_8', False, 'mdi:numeric-8-box', True, mode,15),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_9', False, 'mdi:numeric-9-box', True, mode,16),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_0', False, 'mdi:numeric-0-box', True, mode,7),
 
         WuKongSwitch(hass, host, 'tv_ctl_clean', False, 'mdi:notification-clear-all', True, mode,999),
     ])
@@ -107,7 +110,7 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
 class WuKongSwitch(SwitchDevice):
     """Representation of a demo switch."""
 
-    def __init__(self,hass,host, name, state, icon, assumed,mode,code):
+    def __init__(self,hass,host,prefix, name, state, icon, assumed,mode,code):
         """Initialize the WuKongSwitch switch."""
         self._name = name or DEVICE_DEFAULT_NAME
         self._state = state
@@ -117,6 +120,7 @@ class WuKongSwitch(SwitchDevice):
         self._hass = hass
         self._host = host
         self._mode = mode
+        self._prefix = prefix
 
     @property
     def should_poll(self):
@@ -126,6 +130,8 @@ class WuKongSwitch(SwitchDevice):
     @property
     def name(self):
         """Return the name of the device if any."""
+        if self._prefix != None:
+            return self._prefix + '_' + self._name
         return self._name
 
     @property
@@ -155,11 +161,12 @@ class WuKongSwitch(SwitchDevice):
 
     def sendCode(self):
         s = WuKongService(self._hass, self._host,self._mode)
+        if self._code == 999:
+            return s.SendCleanCommand(None)
         if self._mode == 'UDP':
             return s.sendUDPPackage(PACKAGES[self._name])
         else:
-            if self._code == 999:
-                return s.SendCleanCommand(None)
+
             return s.SendControlCommand(None,self._code)
 
 class WuKongService(object):
@@ -225,8 +232,12 @@ class WuKongService(object):
         return self.sendHttpRequest(url)
 
     def SendConnectCommand(self,call):
+        host = call.data.get('host')
+        if host == None:
+            _Log.error('host is nil!')
+            return
         package=PACKAGES["connect"]
-        self.sendUDPPackage(package)
+        self.sendUDPPackage(package,host)
 
     def SendCommandQueue(self,call):
         cmdQueue = call.data.get('cmdQueue')
@@ -263,8 +274,12 @@ class WuKongService(object):
             _Log.error("requst url:{url} Error:{err}".format(url=url,err=e))
             return False
 
-    def sendUDPPackage(self,base64Data):
-        addr = (self._host, 12305)
+    def sendUDPPackage(self,base64Data,host=None):
+        addr = None
+        if host != None:
+            addr = (host, 12305)
+        else:
+            addr = (self._host, 12305)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         bytePackge = base64.b64decode(base64Data)
         ret = True
