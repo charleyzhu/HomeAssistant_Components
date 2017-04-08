@@ -230,9 +230,12 @@ class WuKongService(object):
 
     def SendCommandQueue(self,call):
         cmdQueue = call.data.get('cmdQueue')
+        _Log.error('cmdQueue: %s' % cmdQueue)
         for cmd in cmdQueue:
+
             code = cmd.get('code')
             delay = cmd.get('delay')
+
             if code == None:
                 return
             if delay == None:
@@ -240,8 +243,10 @@ class WuKongService(object):
             if self._mode == 'UDP':
                 if code in PACKAGES.keys():
                     package = PACKAGES[code]
-                    return self.sendUDPPackage(package)
+                    self.sendUDPPackage(package)
+                    time.sleep(delay / 1000)
                 else:
+
                     _Log.error('Code Error! code:{cd}'.format(cd=code))
                     return
             else:
