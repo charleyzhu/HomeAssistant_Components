@@ -230,7 +230,6 @@ class WuKongService(object):
 
     def SendCommandQueue(self,call):
         cmdQueue = call.data.get('cmdQueue')
-        _Log.error('cmdQueue: %s' % cmdQueue)
         for cmd in cmdQueue:
 
             code = cmd.get('code')
