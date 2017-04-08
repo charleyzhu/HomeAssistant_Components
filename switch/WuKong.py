@@ -10,24 +10,53 @@ from homeassistant.const import DEVICE_DEFAULT_NAME
 from homeassistant.components.switch import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import CONF_HOST
-from homeassistant.core import ServiceCall
 import voluptuous as vol
 
 import time
 import logging
 import requests
+import socket,base64
 
 DOMAIN = 'Wu_Kong_Control'
+CONF_MODE = 'mode'
 _Log=logging.getLogger(__name__)
+
+PACKAGES = {
+    'connect'       :'AAC4EwEzAp4AAAgmAAABNAAAAAAAAABEeyJuYW1lIjoiSG9tZSBBc3Npc3RhbnQiLCJjaGFubmVsIjoiaUFwcFN0b3JlIiwiZGV2IjoiaU9TIn0=',
+    'tv_ctl_up'     :'AAC4EwEzAp4AAAghAAAAEwAAAAAAAAAA',
+    'tv_ctl_down'   :'AAC4EwEzAp4AAAghAAAAFAAAAAAAAAAA',
+    'tv_ctl_left'   :'AAC4EwEzAp4AAAghAAAAFQAAAAAAAAAA',
+    'tv_ctl_right'  :'AAC4EwEzAp4AAAghAAAAFgAAAAAAAAAA',
+    'tv_ctl_home'   :'AAC4EwEzAp4AAAghAAAAAwAAAAAAAAAA',
+    'tv_ctl_ok'     :'AAC4EwEzAp4AAAghAAAAFwAAAAAAAAAA',
+    'tv_ctl_back'   :'AAC4EwEzAp4AAAghAAAABAAAAAAAAAAA',
+    'tv_ctl_volup'  :'AAC4EwEzAp4AAAghAAAAGAAAAAAAAAAA',
+    'tv_ctl_voldown':'AAC4EwEzAp4AAAghAAAAGQAAAAAAAAAA',
+    'tv_ctl_power'  :'AAC4EwEzAp4AAAghAAAAGgAAAAAAAAAA',
+    'tv_ctl_menu'   :'AAC4EwEzAp4AAAghAAAAUgAAAAAAAAAA',
+    'tv_ctl_1'      :'AAC4EwEzAp4AAAghAAAACAAAAAAAAAAA',
+    'tv_ctl_2'      :'AAC4EwEzAp4AAAghAAAACQAAAAAAAAAA',
+    'tv_ctl_3'      :'AAC4EwEzAp4AAAghAAAACgAAAAAAAAAA',
+    'tv_ctl_4'      :'AAC4EwEzAp4AAAghAAAACwAAAAAAAAAA',
+    'tv_ctl_5'      :'AAC4EwEzAp4AAAghAAAADAAAAAAAAAAA',
+    'tv_ctl_6'      :'AAC4EwEzAp4AAAghAAAADQAAAAAAAAAA',
+    'tv_ctl_7'      :'AAC4EwEzAp4AAAghAAAADgAAAAAAAAAA',
+    'tv_ctl_8'      :'AAC4EwEzAp4AAAghAAAADwAAAAAAAAAA',
+    'tv_ctl_9'      :'AAC4EwEzAp4AAAghAAAAEAAAAAAAAAAA',
+    'tv_ctl_0'      :'AAC4EwEzAp4AAAghAAAABwAAAAAAAAAA',
+
+}
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST,default=None):cv.string,
+    vol.Required(CONF_MODE,default='http'):cv.string,
 })
 
 # pylint: disable=unused-argument
 def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     """Setup the demo switches."""
     host = config.get(CONF_HOST)
+    mode =  config.get(CONF_MODE)
     if host == None:
         _Log.error('pls enter host ip address!')
         return False
@@ -37,7 +66,7 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     #     _Log.info(code)
     #     hass.states.set('WuKong.Send_Control_Command', code)
 
-    service = WuKongService(hass,host)
+    service = WuKongService(hass,host,mode)
 
 
     hass.services.register(DOMAIN, 'Send_Control_Command', service.SendControlCommand)
@@ -45,39 +74,40 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
     hass.services.register(DOMAIN, 'Send_Install_Command', service.SendInstallCommand)
     hass.services.register(DOMAIN, 'Send_Clean_Command', service.SendCleanCommand)
     hass.services.register(DOMAIN, 'Send_Command_Queue', service.SendCommandQueue)
+    hass.services.register(DOMAIN, 'Send_Connect_Command', service.SendConnectCommand)
 
 
     add_devices_callback([
-        WuKongSwitch(hass, host, 'tv_ctl_up', False, 'mdi:arrow-up-bold-circle', True,19),
-        WuKongSwitch(hass, host, 'tv_ctl_down', False, 'mdi:arrow-down-bold-circle', True,20),
-        WuKongSwitch(hass, host, 'tv_ctl_left', False, 'mdi:arrow-left-bold-circle', True,21),
-        WuKongSwitch(hass, host, 'tv_ctl_right', False, 'mdi:arrow-right-bold-circle', True,22),
-        WuKongSwitch(hass, host, 'tv_ctl_home', False, 'mdi:home', True,3),
-        WuKongSwitch(hass, host, 'tv_ctl_back', False, 'mdi:backup-restore', True,4),
-        WuKongSwitch(hass, host, 'tv_ctl_ok', False, 'mdi:adjust', True,23),
-        WuKongSwitch(hass, host, 'tv_ctl_volup', False, 'mdi:volume-high', True,24),
-        WuKongSwitch(hass, host, 'tv_ctl_voldown', False, 'mdi:volume-medium', True,25),
-        WuKongSwitch(hass, host, 'tv_ctl_power', False, 'mdi:power', True, 26),
-        WuKongSwitch(hass, host, 'tv_ctl_menu', False, 'mdi:menu', True, 82),
-        WuKongSwitch(hass, host, 'tv_ctl_1', False, 'mdi:numeric-1-box', True,8),
-        WuKongSwitch(hass, host, 'tv_ctl_2', False, 'mdi:numeric-2-box', True,9),
-        WuKongSwitch(hass, host, 'tv_ctl_3', False, 'mdi:numeric-3-box', True,10),
-        WuKongSwitch(hass, host, 'tv_ctl_4', False, 'mdi:numeric-4-box', True,11),
-        WuKongSwitch(hass, host, 'tv_ctl_5', False, 'mdi:numeric-5-box', True,12),
-        WuKongSwitch(hass, host, 'tv_ctl_6', False, 'mdi:numeric-6-box', True,13),
-        WuKongSwitch(hass, host, 'tv_ctl_7', False, 'mdi:numeric-7-box', True,14),
-        WuKongSwitch(hass, host, 'tv_ctl_8', False, 'mdi:numeric-8-box', True,15),
-        WuKongSwitch(hass, host, 'tv_ctl_9', False, 'mdi:numeric-9-box', True,16),
-        WuKongSwitch(hass, host, 'tv_ctl_0', False, 'mdi:numeric-0-box', True,7),
+        WuKongSwitch(hass, host, 'tv_ctl_up', False, 'mdi:arrow-up-bold-circle', True, mode,19),
+        WuKongSwitch(hass, host, 'tv_ctl_down', False, 'mdi:arrow-down-bold-circle', True, mode,20),
+        WuKongSwitch(hass, host, 'tv_ctl_left', False, 'mdi:arrow-left-bold-circle', True, mode,21),
+        WuKongSwitch(hass, host, 'tv_ctl_right', False, 'mdi:arrow-right-bold-circle', True, mode,22),
+        WuKongSwitch(hass, host, 'tv_ctl_home', False, 'mdi:home', True, mode,3),
+        WuKongSwitch(hass, host, 'tv_ctl_back', False, 'mdi:backup-restore', True, mode,4),
+        WuKongSwitch(hass, host, 'tv_ctl_ok', False, 'mdi:adjust', True, mode,23),
+        WuKongSwitch(hass, host, 'tv_ctl_volup', False, 'mdi:volume-high', True, mode,24),
+        WuKongSwitch(hass, host, 'tv_ctl_voldown', False, 'mdi:volume-medium', True, mode,25),
+        WuKongSwitch(hass, host, 'tv_ctl_power', False, 'mdi:power', True, mode, 26),
+        WuKongSwitch(hass, host, 'tv_ctl_menu', False, 'mdi:menu', True, mode, 82),
+        WuKongSwitch(hass, host, 'tv_ctl_1', False, 'mdi:numeric-1-box', True, mode,8),
+        WuKongSwitch(hass, host, 'tv_ctl_2', False, 'mdi:numeric-2-box', True, mode,9),
+        WuKongSwitch(hass, host, 'tv_ctl_3', False, 'mdi:numeric-3-box', True, mode,10),
+        WuKongSwitch(hass, host, 'tv_ctl_4', False, 'mdi:numeric-4-box', True, mode,11),
+        WuKongSwitch(hass, host, 'tv_ctl_5', False, 'mdi:numeric-5-box', True, mode,12),
+        WuKongSwitch(hass, host, 'tv_ctl_6', False, 'mdi:numeric-6-box', True, mode,13),
+        WuKongSwitch(hass, host, 'tv_ctl_7', False, 'mdi:numeric-7-box', True, mode,14),
+        WuKongSwitch(hass, host, 'tv_ctl_8', False, 'mdi:numeric-8-box', True, mode,15),
+        WuKongSwitch(hass, host, 'tv_ctl_9', False, 'mdi:numeric-9-box', True, mode,16),
+        WuKongSwitch(hass, host, 'tv_ctl_0', False, 'mdi:numeric-0-box', True, mode,7),
 
-        WuKongSwitch(hass, host, 'tv_ctl_clean', False, 'mdi:notification-clear-all', True,999),
+        WuKongSwitch(hass, host, 'tv_ctl_clean', False, 'mdi:notification-clear-all', True, mode,999),
     ])
 
 
 class WuKongSwitch(SwitchDevice):
     """Representation of a demo switch."""
 
-    def __init__(self,hass,host, name, state, icon, assumed,code):
+    def __init__(self,hass,host, name, state, icon, assumed,mode,code):
         """Initialize the WuKongSwitch switch."""
         self._name = name or DEVICE_DEFAULT_NAME
         self._state = state
@@ -86,6 +116,7 @@ class WuKongSwitch(SwitchDevice):
         self._code = code
         self._hass = hass
         self._host = host
+        self._mode = mode
 
     @property
     def should_poll(self):
@@ -123,18 +154,36 @@ class WuKongSwitch(SwitchDevice):
         self.schedule_update_ha_state()
 
     def sendCode(self):
-        s = WuKongService(self._hass,self._host)
-        if self._code == 999:
-            return s.SendCleanCommand(None)
-        return s.SendControlCommand(None,self._code)
+        s = WuKongService(self._hass, self._host,self._mode)
+        if self._mode == 'UDP':
+            return s.sendUDPPackage(PACKAGES[self._name])
+        else:
+            if self._code == 999:
+                return s.SendCleanCommand(None)
+            return s.SendControlCommand(None,self._code)
 
 class WuKongService(object):
 
-    def __init__(self,hass,host):
+    def __init__(self,hass,host,mode):
         self._host = host
         self._hass = hass
+        self._mode = mode
 
     def SendControlCommand(self,call,selfcode=None):
+
+        if self._mode == 'UDP':
+            code = call.data.get('code')
+            if code == None:
+                _Log.error('Command Code is nil!')
+                return
+            if code in PACKAGES.keys():
+                package = PACKAGES[code]
+                return self.sendUDPPackage(package)
+            else:
+                _Log.error('Code Error!')
+                return
+
+
         code = ''
         if selfcode == None:
             code = call.data.get('code')
@@ -168,11 +217,16 @@ class WuKongService(object):
         else:
             appUrl = selfappUrl
         url = 'http://{host}:12104/?action=install&url={appUrl}'.format(host=self._host,appUrl=appUrl)
+        _Log.error('url:%s' % url)
         return self.sendHttpRequest(url)
 
     def SendCleanCommand(self,call):
         url = 'http://{host}:12104/?action=clean'.format(host=self._host)
         return self.sendHttpRequest(url)
+
+    def SendConnectCommand(self,call):
+        package=PACKAGES["connect"]
+        self.sendUDPPackage(package)
 
     def SendCommandQueue(self,call):
         cmdQueue = call.data.get('cmdQueue')
@@ -183,16 +237,38 @@ class WuKongService(object):
                 return
             if delay == None:
                 delay = 1000
-            self.SendControlCommand(None,code)
-            time.sleep(delay / 1000)
+            if self._mode == 'UDP':
+                if code in PACKAGES.keys():
+                    package = PACKAGES[code]
+                    return self.sendUDPPackage(package)
+                else:
+                    _Log.error('Code Error! code:{cd}'.format(cd=code))
+                    return
+            else:
+                self.SendControlCommand(None,code)
+                time.sleep(delay / 1000)
 
     def sendHttpRequest(self,url):
         url +'&t={time}'.format(time=int(time.time()))
         try:
             resp = requests.get(url)
             if resp.status_code and resp.text == 'success':
-                return True
-            return False
+                return False
+            return True
         except Exception as e:
             _Log.error("requst url:{url} Error:{err}".format(url=url,err=e))
             return False
+
+    def sendUDPPackage(self,base64Data):
+        addr = (self._host, 12305)
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytePackge = base64.b64decode(base64Data)
+        ret = True
+        try:
+            s.sendto(bytePackge,addr)
+            ret = False
+        except Exception as e:
+            _Log.error("requst UDP Error:{err}, Package:{pkg}".format(err=e,pkg=base64Data))
+            s.close()
+
+        return ret

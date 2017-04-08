@@ -73,9 +73,11 @@ Add the following line to the Configuration.yaml.
 switch:
   - platform: WuKong
     host: 172.16.1.55
+    mode:'UDP'
 ```
 - install [WuKong Remote Control](http://down1.wukongtv.com/yaokong/tv/wkremoteTV-guanwang-release.apk)
 - host is Android TV Box Ip Address
+- mode is optional 'HTTP:UDP'
 
 # 中文
 
@@ -308,3 +310,4 @@ switch:
 ```
 - 安装 [悟空遥控TV端](http://down1.wukongtv.com/yaokong/tv/wkremoteTV-guanwang-release.apk)
 - host: 安装了悟空遥控的安卓盒子(电视)的IP地址
+- mode: 是一个可选项 'HTTP:UDP' 如果不输入默认HTTP
