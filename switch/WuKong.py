@@ -103,7 +103,7 @@ def setup_platform(hass, config, add_devices_callback, discovery_info=None):
         WuKongSwitch(hass, host, prefix, 'tv_ctl_9', False, 'mdi:numeric-9-box', True, mode,16),
         WuKongSwitch(hass, host, prefix, 'tv_ctl_0', False, 'mdi:numeric-0-box', True, mode,7),
 
-        WuKongSwitch(hass, host, 'tv_ctl_clean', False, 'mdi:notification-clear-all', True, mode,999),
+        WuKongSwitch(hass, host, prefix, 'tv_ctl_clean', False, 'mdi:notification-clear-all', True, mode,999),
     ])
 
 
