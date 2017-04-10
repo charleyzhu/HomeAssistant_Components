@@ -28,7 +28,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     cityCodes = config.get('CityCode')
     dev = []
     for code in cityCodes:
-        _Logger.info('[WeatherChina] init CityCode======>'+ code)
+        # _Logger.info('[WeatherChina] init CityCode======>'+ code)
         dev.append(
             WeatherChina(code)
         )
@@ -72,7 +72,7 @@ class WeatherChina(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
 
-        _Logger.info("[WeatherChina] update =====>"+ self._cityCode)
+        # _Logger.info("[WeatherChina] update =====>"+ self._cityCode)
         if self._cityCode == '':
             _Logger.error("[WeatherChina]: CityCode is nil")
             return
@@ -81,7 +81,7 @@ class WeatherChina(Entity):
         # resp = None
         # try:
 
-        _Logger.info("[WeatherChina] updateUrl =====>" +urlStr)
+        # _Logger.info("[WeatherChina] updateUrl =====>" +urlStr)
 
         resp = requests.get(urlStr)
         if resp.status_code != 200:
