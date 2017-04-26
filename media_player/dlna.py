@@ -495,7 +495,7 @@ class DLNARootDevice:
         # URLBase
         urlBase = root.find('{%s}URLBase' % (ns))
         if urlBase is not None:
-            self.iUrlBase = urlBase.text
+            self._urlBase = urlBase.text
         else:
             m = re.match('http://([^/]*)(.*$)', location)
             self._urlBase = 'http://' + m.group(1)
