@@ -359,13 +359,13 @@ switch:
  /srv/homeassistant/homeassistant_venv/lib/python3.4/site-packages/homeassistant/components
  ```
 
-如果是你是使用叮咚智能音箱
+如果是你是使用叮咚智能音箱
 在Configuration.yaml文件中添加一下字段
 ```
 emulated_hue_charley:
     type: dingdong
 ```
-自动按下Link 按钮
+自动按下Link按钮
 ```
 emulated_hue_charley:
     type: dingdong
