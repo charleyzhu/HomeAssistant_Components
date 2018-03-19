@@ -374,4 +374,4 @@ emulated_hue_charley:
 
 其他设置参考官方的模拟器设置[emulated_hue](https://home-assistant.io/components/emulated_hue/)
 
-如果模拟器有任何问题请到QQ群或者[论坛](https://bbs.hassbian.com/thread-3135-1-1.html)发布你的问题
+如果模拟器有任何问题请到QQ群或者[论坛](https://bbs.hassbian.com/thread-3135-1-1.html)发布你的问题
