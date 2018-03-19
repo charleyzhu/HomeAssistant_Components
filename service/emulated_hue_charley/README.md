@@ -51,13 +51,13 @@ Other parameters refer to [HomeAssistant](https://home-assistant.io/components/e
  /srv/homeassistant/homeassistant_venv/lib/python3.4/site-packages/homeassistant/components
  ```
 
-如果是你是使用叮咚智能音箱
+如果是你是使用叮咚智能音箱
 在Configuration.yaml文件中添加一下字段
 ```
 emulated_hue_charley:
     type: dingdong
 ```
-自动按下Link 按钮
+自动按下Link按钮
 ```
 emulated_hue_charley:
     type: dingdong
@@ -66,4 +66,4 @@ emulated_hue_charley:
 
 其他设置参考官方的模拟器设置[emulated_hue](https://home-assistant.io/components/emulated_hue/)
 
-如果模拟器有任何问题请到QQ群或者[论坛](https://bbs.hassbian.com/thread-3135-1-1.html)发布你的问题
+如果模拟器有任何问题请到QQ群或者[论坛](https://bbs.hassbian.com/thread-3135-1-1.html)发布你的问题
