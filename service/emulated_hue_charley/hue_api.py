@@ -121,9 +121,6 @@ class HueUsernameView(HomeAssistantView):
     extra_urls = ['/api/']
     requires_auth = False
 
-    def __init__(self,config):
-        self.config = config
-
     @asyncio.coroutine
     def post(self, request):
         """Handle a POST request."""
@@ -135,13 +132,7 @@ class HueUsernameView(HomeAssistantView):
         if 'devicetype' not in data:
             return self.json_message('devicetype not specified',
                                      HTTP_BAD_REQUEST)
-        if self.config.type == "dingdong":
-            if self.config.auto_link:
-                return self.json([{'success': {'username': '12345678901234567890'}}])
-            else:
-                return self.json([{"error":{"type":"101","address":"/api/","description":"link button not pressed"}}])
-        else:
-            return self.json([{'success': {'username': '12345678901234567890'}}])
+        return self.json([{'success': {'username': '12345678901234567890'}}])
 
 class HueAllLightsStateView(HomeAssistantView):
     """Handle requests for getting and setting info about entities."""
@@ -306,11 +297,11 @@ class HueOneLightChangeView(HomeAssistantView):
                     # Convert 0-100 to a fan speed
                     if brightness == 0:
                         data[ATTR_SPEED] = SPEED_OFF
-                    elif brightness <= 33.3 and brightness > 0:
+                    elif 0 < brightness <= 33.3:
                         data[ATTR_SPEED] = SPEED_LOW
-                    elif brightness <= 66.6 and brightness > 33.3:
+                    elif 33.3 < brightness <= 66.6:
                         data[ATTR_SPEED] = SPEED_MEDIUM
-                    elif brightness <= 100 and brightness > 66.6:
+                    elif 66.6 < brightness <= 100:
                         data[ATTR_SPEED] = SPEED_HIGH
 
         if entity.domain in config.off_maps_to_on_domains:
