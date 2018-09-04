@@ -3,10 +3,8 @@ Support for AirPlay.
 
 Developed by Charley
 """
-REQUIREMENTS = ['biplist==1.0.3']
 
 import requests
-from biplist import *
 
 import homeassistant.util.dt as dt_util
 from homeassistant.components.media_player import (
